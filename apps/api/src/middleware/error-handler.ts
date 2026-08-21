@@ -7,10 +7,7 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  const isPrismaKnownError =
-    err instanceof Prisma.PrismaClientKnownRequestError;
-
-  if (isPrismaKnownError && err.code === "P2002") {
+  if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
     res.status(409).json({ error: "A record with this value already exists" });
     return;
   }
