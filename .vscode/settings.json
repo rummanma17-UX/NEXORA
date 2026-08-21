@@ -1,47 +1,22 @@
 {
-  "folder-color.pathColors": [
-    {
-      "folderPath": "NEXORA - main\\apps\\web\\node_modules\\",
-      "isFolderOnly": true,
-      "color": "foldercolorizer.color_1c1c1c"
-    },
-    {
-      "folderPath": "NEXORA - main\\apps\\web\\.next\\",
-      "isFolderOnly": true,
-      "color": "foldercolorizer.color_1c1c1c"
-    },
-    {
-      "folderPath": "NEXORA - main\\.vscode\\",
-      "isFolderOnly": true,
-      "color": "foldercolorizer.color_1c1c1c"
-    },
-    {
-      "folderPath": "NEXORA - main\\apps\\web\\public\\",
-      "isFolderOnly": true,
-      "color": "foldercolorizer.color_ffffff"
-    },
-    {
-      "folderPath": "NEXORA - main\\apps\\web\\app\\",
-      "isFolderOnly": true,
-      "color": "foldercolorizer.color_ffffff"
-    }
-  ],
-
   "files.exclude": {
-    // never need
+    //todo never need
     "**/node_modules": true,
     "**/.next": true,
     "**/dist": true,
     "**/build": true,
     "**/.cache": true,
 
-    // agents
+    //todo sometime need
+    "**/prisma/migrations": true,
+
+    //todo agents
     "**/.agents": true,
     "**/.claude": true,
     "**/.windsurf": true,
 
-    // temporary
-    // "**/web": true
+    //todo temporary
+    "**/web": true,
   },
-  "prisma.pinToPrisma6": true
+  "prisma.pinToPrisma6": false,
 }
