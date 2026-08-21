@@ -1,0 +1,93 @@
+# Premily
+
+A production-grade e-commerce platform built for the Bangladesh market, architecturally comparable to Daraz/Amazon. This is both a real build and a deliberate learning project — every piece of the backend is built and understood file-by-file before moving to the next.
+
+## Tech Stack
+
+**Frontend** (not yet started)
+- Next.js 15, TypeScript, Tailwind CSS, shadcn/ui
+- TanStack Query (server state), Zustand (client state)
+- React Hook Form + Zod (forms & validation)
+
+**Backend** (in progress)
+- Express 5, TypeScript, ESM
+- PostgreSQL 17 + Prisma 7 (driver adapter: `@prisma/adapter-pg`)
+- Zod-validated environment config
+- Feature-based module structure (`modules/<feature>/`)
+
+**Auth** (planned)
+- Argon2id password hashing, HTTP-only secure cookies
+
+**Payments** (planned, Bangladesh-focused)
+- SSLCommerz, bKash, Nagad
+
+**Infra**
+- Docker Compose (local Postgres)
+- pnpm monorepo (`apps/web`, `apps/api`)
+
+## Project Structure
+
+Premily/
+├── apps/
+│ ├── web/ # Next.js frontend (scaffold only, untouched yet)
+│ └── api/ # Express backend (active development)
+│ ├── prisma/
+│ │ ├── schema.prisma
+│ │ └── migrations/
+│ ├── src/
+│ │ ├── app.ts # Express app + middleware + route mounting
+│ │ ├── index.ts # Server entrypoint (imports app, calls listen)
+│ │ ├── config/
+│ │ │ └── env.ts # Zod-validated environment variables
+│ │ ├── lib/
+│ │ │ └── prisma.ts # Shared Prisma Client singleton
+│ │ ├── middleware/
+│ │ │ └── error-handler.ts
+│ │ └── modules/
+│ │ └── categories/ # routes → controller → service → schema
+│ └── prisma.config.ts # CLI-side DB connection config (Prisma 7)
+├── docker-compose.yml # Local Postgres 17 container
+└── pnpm-workspace.yaml
+
+
+## Architecture Decisions
+
+- **Product variants are first-class from day one.** `ProductVariant` (SKU, price, stock, size, color) is separate from `Product` — cart/order line items reference variants, never products directly. Avoids a costly schema migration later.
+- **Decimal, never Float, for money.** All price fields use `@db.Decimal(10, 2)`.
+- **cuid over integer IDs.** Prevents exposing sequential/guessable IDs in public URLs.
+- **Order line items snapshot data at purchase time** (`priceAtOrder`, `productName`, `variantLabel`) rather than referencing live product data — so past orders stay accurate even if a product's price/name changes or the product is deleted later.
+- **Feature-based folders, not type-based.** `modules/products/` holds everything product-related, rather than scattering across top-level `controllers/`, `services/` folders.
+- **`app.ts` / `index.ts` split.** `app.ts` builds the Express app (testable in isolation); `index.ts` only starts it. Enables clean testing later without side effects from server startup.
+
+## Local Setup
+
+**Prerequisites:** Node.js, pnpm, Docker Desktop
+
+```bash
+# from repo root
+pnpm install
+pnpm approve-builds        # approve sharp, prisma build scripts
+
+docker compose up -d       # start local Postgres
+
+pnpm --filter api exec prisma migrate dev   # apply migrations
+pnpm --filter api dev                        # start API on :4000
+```
+
+Copy `apps/api/.env.example` to `apps/api/.env` and fill in real values before running.
+
+## Current Status
+
+- ✅ Express app scaffolded with CORS, JSON parsing, centralized error handling
+- ✅ Zod-validated env config
+- ✅ Full Prisma schema: User, Category, Product, ProductVariant, ProductImage, Cart, CartItem, Order, OrderItem
+- ✅ First working feature module: Categories (`GET` / `POST /api/categories`)
+- ✅ Prisma-specific error handling (e.g. unique constraint → clean 409 response)
+- ⏳ Auth (register/login, Argon2id, cookies) — next up
+- ⏳ Products module
+- ⏳ Cart, Orders, Payments
+- ⏳ Frontend (not started — backend-first approach)
+
+## Notes for AI Assistants / Auditors
+
+This project deliberately follows a **backend-first** build order. If asked about frontend features, note the frontend is still the default Next.js scaffold — nothing has been customized there yet. Backend follows a strict routes → controller → service → (schema) layering per feature module.
