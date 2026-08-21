@@ -25,7 +25,9 @@ A production-grade e-commerce platform built for the Bangladesh market, architec
 - Docker Compose (local Postgres)
 - pnpm monorepo (`apps/web`, `apps/api`)
 
-## Project Structure
+## Project Structure (will look good in code editor)
+
+
 
 Premily/
 ├── apps/
